@@ -1,0 +1,90 @@
+[gd_scene load_steps=6 format=3 uid="uid://bftnystqrj6fb"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_6a2i2"]
+[ext_resource type="Theme" uid="uid://cnm7lro7t5xop" path="res://new_theme.tres" id="2_jwm3b"]
+
+[sub_resource type="Theme" id="Theme_pn2uu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1vl8v"]
+bg_color = Color(0.177853, 0.177853, 0.177853, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_ty3is"]
+line_spacing = 0.0
+font_size = 24
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Node" type="Node"]
+script = ExtResource("1_6a2i2")
+
+[node name="InputText" type="LineEdit" parent="."]
+offset_left = 1402.0
+offset_top = 881.0
+offset_right = 1800.0
+offset_bottom = 985.0
+theme = ExtResource("2_jwm3b")
+placeholder_text = "Введите сообщение..."
+
+[node name="Button" type="Button" parent="."]
+offset_left = 1619.0
+offset_top = 37.0
+offset_right = 1864.0
+offset_bottom = 123.0
+theme = ExtResource("2_jwm3b")
+text = "Сброс"
+
+[node name="Baraban1" type="Polygon2D" parent="."]
+position = Vector2(1972, 131)
+polygon = PackedVector2Array(0, 0, 50, 0, 50, 600, 0, 600)
+
+[node name="HBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = SubResource("Theme_pn2uu")
+theme_override_styles/panel = SubResource("StyleBoxFlat_1vl8v")
+
+[node name="Label" type="Label" parent="HBoxContainer/ColorRect"]
+layout_mode = 2
+text = "А"
+label_settings = SubResource("LabelSettings_ty3is")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 62.0
+offset_top = 807.0
+offset_right = 412.0
+offset_bottom = 892.0
+theme = ExtResource("2_jwm3b")
+text = "Результат:"
+
+[node name="OutputLabel" type="Label" parent="."]
+offset_left = 23.0
+offset_top = 900.0
+offset_right = 1342.0
+offset_bottom = 1058.0
+theme = ExtResource("2_jwm3b")
+autowrap_mode = 1
+
+[node name="GridContainer" type="GridContainer" parent="."]
+offset_left = 10.0
+offset_top = 159.0
+offset_right = 1900.0
+offset_bottom = 772.0
+columns = 34
+
+[connection signal="text_changed" from="InputText" to="." method="_on_line_edit_text_changed"]
+[connection signal="pressed" from="Button" to="." method="_on_reset_button_pressed"]
