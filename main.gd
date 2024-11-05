@@ -112,7 +112,7 @@ const MAPPINGS : Array[Dictionary] = [
 		33: 21,
 	},
 ];
-# sorry they're not in order bc i was making that with python lol
+
 const REFLECTOR_MAPPINGS := {
 	0: 16,
 	1: 19,
@@ -157,6 +157,8 @@ var rotors : Array[Dictionary] = MAPPINGS.duplicate(true);
 static var rotor_pos := [0, 0, 0];
 
 var rotation_count := [0, 0, 0];
+
+var last_idx = null;
 
 @onready var input_text : LineEdit = $InputText;
 
@@ -248,6 +250,7 @@ func trigger(char: String) -> void:
 	var tf_idx := Globals.ALPHABET.find(char);
 	if tf_idx == -1:
 		return;
+	last_idx = tf_idx;
 	rotate_rotors();
 	for i in 3:
 		tf_idx = rotors[i][tf_idx];
@@ -275,31 +278,42 @@ func _on_reset_button_pressed() -> void:
 
 
 func _draw() -> void:
+	# highlight the latest entered key
+	for c in $InputKeys.get_children():
+		c.self_modulate = Color.WHITE;
+		c.get_node('Label').modulate = Color.CHARTREUSE;
+	if last_idx != null:
+		$InputKeys.get_children()[last_idx].get_node("Label").modulate = Color.VIOLET;
+		$InputKeys.get_children()[last_idx].self_modulate = Color.VIOLET;
+	
+	for i in rotors.size():
+		for j in rotors[i].size():
+			var start : int = j;
+			var end : int = wrapi(rotors[i][j] - rotation_count[i], 0, 34);
+			var color := Color(Color.YELLOW, 0.5);
+			draw_line(
+				containers[2 * i].position + Vector2(25, 12.5 + 25 * start),
+				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * end),
+				color, 2);
+
+			draw_line(	# joining between rotors
+				containers[2 * i + 1].position + Vector2(25, 12.5 + 25 * j),
+				containers[2 * i + 2].position + Vector2(0, 12.5 + 25 * j),
+				Color(Color.AQUAMARINE, 0.75), 2.5
+			);
+			
 	var reflector_temp := REFLECTOR_MAPPINGS.duplicate();
 	# pop pairs of letters from the reflector cloned dict and join them
 	# their X position depends only on the key though
 	while (not reflector_temp.is_empty()):
 		var key : int = reflector_temp[reflector_temp.keys()[0]];
 		var val : int = reflector_temp[key];
+		var color := Color(Color.CORAL, 0.75);
 		draw_polyline([
 			containers[6].position + Vector2(25, 12.5 + 25 * key),
 			containers[6].position + Vector2(50 + 15 * key, 12.5 + 25 * key),
 			containers[6].position + Vector2(50 + 15 * key, 12.5 + 25 * val),
 			containers[6].position + Vector2(25, 12.5 + 25 * val)
-		], Color.CORAL, 3.0);
+		], color, 3.0);
 		reflector_temp.erase(key);
 		reflector_temp.erase(val);
-	
-	for i in rotors.size():
-		for j in rotors[i].size():
-			var start : int = j;
-			var end : int = wrapi(rotors[i][j] - rotation_count[i], 0, 34);
-			draw_line(
-				containers[2 * i].position + Vector2(25, 12.5 + 25 * start),
-				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * end),
-				Color(Color.YELLOW, 0.5), 2);
-			draw_line(
-				containers[2 * i + 1].position + Vector2(25, 12.5 + 25 * j),
-				containers[2 * i + 2].position + Vector2(0, 12.5 + 25 * j),
-				Color(Color.AQUAMARINE, 0.75), 2.5
-			);
