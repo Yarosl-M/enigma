@@ -186,7 +186,7 @@ func _ready() -> void:
 			var out_letter := LETTER.instantiate() as PanelContainer;
 			out_letter.get_node("Label").text = (Globals.ALPHABET[j]
 					if Globals.ALPHABET[j] != ' ' else '_');
-			out_letter.modulate = Color.RED;
+			out_letter.get_node('Label').modulate = Color.YELLOW;
 			containers[2 * i + 1].add_child(out_letter);
 	for i in REFLECTOR_MAPPINGS.size():
 		var letter := LETTER.instantiate() as PanelContainer;
@@ -194,7 +194,7 @@ func _ready() -> void:
 					if Globals.ALPHABET[i] != ' ' else '_');
 		# reflector
 		containers[6].add_child(letter);
-		letter.modulate = Color.YELLOW;
+		letter.get_node('Label').modulate = Color.CYAN;
 	queue_redraw();
 
 
@@ -286,9 +286,9 @@ func _draw() -> void:
 	
 	for i in rotors.size():
 		for j in rotors[i].size():
+			var start : int = j;
+			var end : int = wrapi(rotors[i][j] - rotation_count[i], 0, 34);
 			draw_line(
-				containers[2 * i].position + Vector2(25, 12.5 + 25 * j),
-				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * (
-					rotors[i][j]
-				)),
+				containers[2 * i].position + Vector2(25, 12.5 + 25 * start),
+				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * end),
 				Color(Color.YELLOW, 0.5), 2);
