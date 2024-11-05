@@ -27,16 +27,17 @@ position = Vector2(1972, 131)
 polygon = PackedVector2Array(0, 0, 50, 0, 50, 600, 0, 600)
 
 [node name="Label2" type="Label" parent="."]
-offset_top = 896.0
-offset_right = 185.0
-offset_bottom = 960.0
+offset_left = 32.0
+offset_top = 992.0
+offset_right = 217.0
+offset_bottom = 1056.0
 theme = ExtResource("2_jwm3b")
 text = "Результат:"
 
 [node name="OutputLabel" type="Label" parent="."]
-offset_left = 32.0
-offset_top = 960.0
-offset_right = 1408.0
+offset_left = 224.0
+offset_top = 992.0
+offset_right = 1440.0
 offset_bottom = 1056.0
 theme = ExtResource("2_jwm3b")
 autowrap_mode = 1
@@ -96,6 +97,84 @@ offset_top = 10.0
 offset_right = 1088.0
 offset_bottom = 10.0
 theme_override_constants/separation = 0
+
+[node name="Btn1Prev" type="Button" parent="."]
+visible = false
+offset_left = 96.0
+offset_top = 928.0
+offset_right = 128.0
+offset_bottom = 960.0
+text = "<"
+
+[node name="Btn1Next" type="Button" parent="."]
+visible = false
+offset_left = 160.0
+offset_top = 928.0
+offset_right = 192.0
+offset_bottom = 960.0
+text = ">"
+
+[node name="1Rotor" type="Label" parent="."]
+visible = false
+offset_left = 128.0
+offset_top = 928.0
+offset_right = 160.0
+offset_bottom = 960.0
+text = "А"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Btn2Prev" type="Button" parent="."]
+visible = false
+offset_left = 416.0
+offset_top = 928.0
+offset_right = 448.0
+offset_bottom = 960.0
+text = "<"
+
+[node name="Btn2Next" type="Button" parent="."]
+visible = false
+offset_left = 480.0
+offset_top = 928.0
+offset_right = 512.0
+offset_bottom = 960.0
+text = ">"
+
+[node name="2Rotor" type="Label" parent="."]
+visible = false
+offset_left = 448.0
+offset_top = 928.0
+offset_right = 480.0
+offset_bottom = 960.0
+text = "А"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Btn3Prev" type="Button" parent="."]
+visible = false
+offset_left = 736.0
+offset_top = 928.0
+offset_right = 768.0
+offset_bottom = 960.0
+text = "<"
+
+[node name="Btn3Next" type="Button" parent="."]
+visible = false
+offset_left = 800.0
+offset_top = 928.0
+offset_right = 832.0
+offset_bottom = 960.0
+text = ">"
+
+[node name="3Rotor" type="Label" parent="."]
+visible = false
+offset_left = 768.0
+offset_top = 928.0
+offset_right = 800.0
+offset_bottom = 960.0
+text = "А"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="text_changed" from="InputText" to="." method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="Button" to="." method="_on_reset_button_pressed"]
