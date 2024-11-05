@@ -1,4 +1,6 @@
-extends Node;
+extends Node2D;
+
+const LETTER := preload("res://panel_container.tscn");
 
 const MAPPINGS : Array[Dictionary] = [
 	{
@@ -112,60 +114,100 @@ const MAPPINGS : Array[Dictionary] = [
 ];
 # sorry they're not in order bc i was making that with python lol
 const REFLECTOR_MAPPINGS := {
-	28: 14,
-	11: 10,
-	19: 1,
-	25: 18,
-	31: 30,
-	20: 8,
-	2: 33,
-	7: 9,
-	5: 29,
-	26: 23,
-	21: 3,
-	12: 32,
-	4: 13,
-	16: 0,
-	27: 24,
-	22: 15,
-	17: 6,
-	6: 17,
-	15: 22,
-	24: 27,
 	0: 16,
-	13: 4,
-	32: 12,
-	3: 21,
-	23: 26,
-	29: 5,
-	9: 7,
-	33: 2,
-	8: 20,
-	30: 31,
-	18: 25,
 	1: 19,
+	2: 33,
+	3: 21,
+	4: 13,
+	5: 29,
+	6: 17,
+	7: 9,
+	8: 20,
+	9: 7,
 	10: 11,
+	11: 10,
+	12: 32,
+	13: 4,
 	14: 28,
+	15: 22,
+	16: 0,
+	17: 6,
+	18: 25,
+	19: 1,
+	20: 8,
+	21: 3,
+	22: 15,
+	23: 26,
+	24: 27,
+	25: 18,
+	26: 23,
+	27: 24,
+	28: 14,
+	29: 5,
+	30: 31,
+	31: 30,
+	32: 12,
+	33: 2,
 };
 const ROTOR_SIZE = 34;
 
 var rotors : Array[Dictionary] = MAPPINGS.duplicate(true);
 # reflector stays in place
 
+static var rotor_pos := [0, 0, 0];
+
 var rotation_count := [0, 0, 0];
 
 @onready var input_text : LineEdit = $InputText;
 
+@onready var containers : Array[VBoxContainer] = [
+	$Rotor1In,
+	$Rotor1Out,
+	$Rotor2In,
+	$Rotor2Out,
+	$Rotor3In,
+	$Rotor3Out,
+	$Reflector,
+];
+
 func _ready() -> void:
 	var grid := $GridContainer;
-	for r in rotors:
-		for k in r.keys():
-			var stuff := Panel.new();
-			stuff.custom_minimum_size = Vector2(52, 30);
-			var lbl := Label.new();
-			lbl.text =  str(r[k]);
-			stuff.add_child(lbl);
-			grid.add_child(stuff);
+	for i in rotors.size():
+		if rotor_pos[i] != 0:
+			for j in rotor_pos[i]:
+				rotate_rotor(j); # couldn't be bothered with other stuff
+		# 2i is the input rotor
+		# 2i + 1 is the output rotor
+		for j in rotors[i].size():
+			var in_letter := LETTER.instantiate() as PanelContainer;
+			in_letter.get_node("Label").text = (Globals.ALPHABET[j]
+					if Globals.ALPHABET[j] != ' ' else '_');
+			containers[2 * i].add_child(in_letter);
+			var out_letter := LETTER.instantiate() as PanelContainer;
+			out_letter.get_node("Label").text = (Globals.ALPHABET[j]
+					if Globals.ALPHABET[j] != ' ' else '_');
+			out_letter.modulate = Color.RED;
+			containers[2 * i + 1].add_child(out_letter);
+	for i in REFLECTOR_MAPPINGS.size():
+		var letter := LETTER.instantiate() as PanelContainer;
+		letter.get_node("Label").text = (Globals.ALPHABET[i]
+					if Globals.ALPHABET[i] != ' ' else '_');
+		# reflector
+		containers[6].add_child(letter);
+		letter.modulate = Color.YELLOW;
+	queue_redraw();
+
+
+# shift letters in i-th rotor
+func shift_letters(i: int) -> void:
+	var in_rotor := containers[2 * i];
+	var out_rotor := containers[2 * i + 1];
+	var in_letter := in_rotor.get_children()[0];
+	var out_letter := out_rotor.get_children()[0];
+	in_rotor.remove_child(in_letter);
+	in_rotor.add_child(in_letter);
+	out_rotor.remove_child(out_letter);
+	out_rotor.add_child(out_letter);
 
 
 func rotate_rotor(i: int) -> void:
@@ -173,6 +215,7 @@ func rotate_rotor(i: int) -> void:
 	for j in range(0, ROTOR_SIZE - 1):
 		rotors[i][j] = old_mapping[j + 1];
 	rotors[i][ROTOR_SIZE - 1] = old_mapping[0];
+	shift_letters(i);
 
 
 # actually the rotor should rotate *before* the input signal
@@ -207,18 +250,7 @@ func trigger(char: String) -> void:
 		tf_idx = rotors[2 - i].find_key(tf_idx);
 	tf_char = Globals.ALPHABET[tf_idx];
 	$OutputLabel.text += tf_char;
-	var grid := $GridContainer;
-	for c in grid.get_children():
-		c.queue_free();
-	await get_tree().process_frame;
-	for r in rotors:
-		for k in r.keys():
-			var stuff := Panel.new();
-			stuff.custom_minimum_size = Vector2(52, 30);
-			var lbl := Label.new();
-			lbl.text = str(r[k]);
-			stuff.add_child(lbl);
-			grid.add_child(stuff);
+	queue_redraw();
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
@@ -233,4 +265,30 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 
 
 func _on_reset_button_pressed() -> void:
-	pass # Replace with function body.
+	get_tree().reload_current_scene();
+
+
+func _draw() -> void:
+	var reflector_temp := REFLECTOR_MAPPINGS.duplicate();
+	# pop pairs of letters from the reflector cloned dict and join them
+	# their X position depends only on the key though
+	while (not reflector_temp.is_empty()):
+		var key : int = reflector_temp[reflector_temp.keys()[0]];
+		var val : int = reflector_temp[key];
+		draw_polyline([
+			containers[6].position + Vector2(25, 12.5 + 25 * key),
+			containers[6].position + Vector2(50 + 15 * key, 12.5 + 25 * key),
+			containers[6].position + Vector2(50 + 15 * key, 12.5 + 25 * val),
+			containers[6].position + Vector2(25, 12.5 + 25 * val)
+		], Color.CORAL, 3.0);
+		reflector_temp.erase(key);
+		reflector_temp.erase(val);
+	
+	for i in rotors.size():
+		for j in rotors[i].size():
+			draw_line(
+				containers[2 * i].position + Vector2(25, 12.5 + 25 * j),
+				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * (
+					rotors[i][j]
+				)),
+				Color(Color.YELLOW, 0.5), 2);
