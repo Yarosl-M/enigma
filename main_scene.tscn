@@ -48,6 +48,13 @@ offset_right = 89.0
 offset_bottom = 50.0
 theme_override_constants/separation = 0
 
+[node name="InputKeys" type="VBoxContainer" parent="."]
+offset_left = 32.0
+offset_top = 10.0
+offset_right = 57.0
+offset_bottom = 50.0
+theme_override_constants/separation = 0
+
 [node name="Rotor1Out" type="VBoxContainer" parent="."]
 offset_left = 192.0
 offset_top = 10.0
@@ -86,8 +93,8 @@ theme_override_constants/separation = 0
 [node name="Reflector" type="VBoxContainer" parent="."]
 offset_left = 1088.0
 offset_top = 10.0
-offset_right = 1128.0
-offset_bottom = 50.0
+offset_right = 1088.0
+offset_bottom = 10.0
 theme_override_constants/separation = 0
 
 [connection signal="text_changed" from="InputText" to="." method="_on_line_edit_text_changed"]

@@ -195,6 +195,12 @@ func _ready() -> void:
 		# reflector
 		containers[6].add_child(letter);
 		letter.get_node('Label').modulate = Color.CYAN;
+	for i in Globals.ALPHABET.length():
+		var letter := LETTER.instantiate() as PanelContainer;
+		letter.get_node("Label").text = (Globals.ALPHABET[i]
+				if Globals.ALPHABET[i] != ' ' else '_');
+		letter.get_node('Label').modulate = Color.CHARTREUSE;
+		$InputKeys.add_child(letter);
 	queue_redraw();
 
 
@@ -292,3 +298,8 @@ func _draw() -> void:
 				containers[2 * i].position + Vector2(25, 12.5 + 25 * start),
 				containers[2 * i + 1].position + Vector2(0, 12.5 + 25 * end),
 				Color(Color.YELLOW, 0.5), 2);
+			draw_line(
+				containers[2 * i + 1].position + Vector2(25, 12.5 + 25 * j),
+				containers[2 * i + 2].position + Vector2(0, 12.5 + 25 * j),
+				Color(Color.AQUAMARINE, 0.75), 2.5
+			);
